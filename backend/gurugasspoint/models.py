@@ -6,7 +6,7 @@ class Product(models.Model):
     weight=models.IntegerField()
     price=models.IntegerField()
     units=models.IntegerField()
-    serial_number=models.IntegerField()
+    serial_number=models.CharField(max_length=100)
     
     
 class Order(models.Model):
