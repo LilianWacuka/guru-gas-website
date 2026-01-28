@@ -24,9 +24,9 @@
             <td>{{ product.units }}</td>
             <td>{{ product.serial_number }}</td>
             <td>
-                <a href="{% url 'updateproduct' product.id %}">Edit </a>
+                <a href="{% url 'product_update' product.id %}">Edit </a>
                 
-                <a href="{% url 'deleteproduct' product.id %}">Delete </a>
+                <a href="{% url 'product_delete' product.id %}">Delete </a>
             </td>
         </tr>
         {% endfor %}

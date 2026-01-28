@@ -1,34 +1,34 @@
-from django.shortcuts import render
-from django.http import HttpResponse
-from gurugasspoint.models import Product
-from django import forms
-from gurugasspoint .forms import ProductForm
-from django.shortcuts import redirect
-# Create your views here.
-def products(request):
-    products=Product.objects.all()
-    return render(request,'products.html',{'products':products})
+# myapp/views.py
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Product
+from .forms import ProductForm
 
-def addproduct(request):
-    if request.method=="GET":        
-        form=ProductForm()
-        return render(request,'addproducts.html',{'form':form})
-    else:
-        form=ProductForm(request.POST)
-        if form.is_valid():
-            form.save()
-        return redirect('products')
+# READ: List all products
+def product_list(request):
+    products = Product.objects.all()
+    return render(request, 'allproducts.html', {'products': products})
 
-    
+# CREATE: Add a new product
+def product_create(request):
+    form = ProductForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        return redirect('product_list')
+    return render(request, 'addproducts.html', {'form': form})
 
-def updateproduct(request,id):
-    product=Product.objects.get(id=id)
-    form=ProductForm(instance=product)
-    return render(request,'edit.html', {'form':form})
+# UPDATE: Edit an existing product
+def product_update(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    form = ProductForm(request.POST or None, instance=product)
+    if form.is_valid():
+        form.save()
+        return redirect('product_list')
+    return render(request, 'editproducts.html', {'form': form})
 
-def deleteproduct (request,id):
-    product=Product.objects.get(id=id)
-    product.delete()
-    return redirect('/products')
-    
-    
+# DELETE: Remove a product
+def product_delete(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == 'POST':
+        product.delete()
+        return redirect('product_list')
+    return render(request, 'allproducts.html', {'product': product})
