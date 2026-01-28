@@ -23,15 +23,12 @@ def addproduct(request):
 
 def updateproduct(request,id):
     product=Product.objects.get(id=id)
-    form=ProductForm(request.POST,instance=product)
-    if form.is_valid():
-        form.save()
-        
-    return render(request,'editproducts.html',{'product':product})
+    form=ProductForm(instance=product)
+    return render(request,'edit.html', {'form':form})
 
 def deleteproduct (request,id):
     product=Product.objects.get(id=id)
     product.delete()
-    
+    return redirect('/products')
     
     
