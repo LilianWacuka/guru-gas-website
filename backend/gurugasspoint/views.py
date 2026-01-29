@@ -96,3 +96,7 @@ def user_delete(request, pk):
     return render(request, 'users/allusers.html', {'user': user})
 
 
+
+def customerview(request):
+    products = Product.objects.all()
+    return render(request, 'customers/viewproducts.html', {'products': products})
