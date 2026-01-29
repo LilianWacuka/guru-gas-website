@@ -2,6 +2,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product,Customer,User
 from .forms import ProductForm,CustomerForm,UserForm
+from django.contrib import messages
 
 # READ: List all products
 def product_list(request):
@@ -26,12 +27,13 @@ def product_update(request, pk):
     return render(request, 'products/editproducts.html', {'form': form})
 
 # DELETE: Remove a product
-def product_delete(request, pk):
-    product = get_object_or_404(Product, pk=pk)
-    if request.method == 'POST':
-        product.delete()
-        return redirect('product_list')
-    return render(request, 'products/allproducts.html', {'product': product})
+def product_delete(request, id):
+    product = Product.objects.get(id=id)
+    product.delete()
+    messages.success(request, " deleted successfully.")
+    return redirect('product_list')
+    return render(request,'products/allproducts.html',{'product':product})
+
 
 #  MAMABO YA  CUSTOMER KWA DATABASE
 # READ: List all products
@@ -57,12 +59,14 @@ def customer_update(request, pk):
     return render(request, 'customers/editcustomer.html', {'form': form})
 
 # DELETE: Remove a Customer
-def customer_delete(request, pk):
-    customer = get_object_or_404(Customer, pk=pk)
-    if request.method == 'POST':
-        customer.delete()
-        return redirect('customers_list')
-    return render(request, 'customers/allcustomers.html', {'customer': customer})
+def customer_delete(request, id):
+    customer = Customer.objects.get(id=id)
+    customer.delete()
+    messages.success(request, " deleted successfully.")
+    return redirect('customer_list')
+    return render(request,'customers/allcustomers.html',{'customer':customer})
+
+
 
 #  MAMABO YA  users KWA DATABASE
 # READ: List all USERS
@@ -88,12 +92,14 @@ def user_update(request, pk):
     return render(request, 'users/edituser.html', {'form': form})
 
 # DELETE: Remove a user
-def user_delete(request, pk):
-    user = get_object_or_404(User, pk=pk)
-    if request.method == 'POST':
-        user.delete()
-        return redirect('users_list')
-    return render(request, 'users/allusers.html', {'user': user})
+def user_delete(request, id):
+    user = User.objects.get(id=id)
+    user.delete()
+    messages.success(request, " deleted successfully.")
+    return redirect('user_list')
+    return render(request,'users/allusers.html',{'user':user})
+
+
 
 
 
