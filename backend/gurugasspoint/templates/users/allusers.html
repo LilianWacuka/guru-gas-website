@@ -23,9 +23,9 @@
             <td>{{ product.customer_image }}</td>
             
             <td>
-                <a href="{% url 'userr_update' user.id %}">Edit </a>
+                <a href="{% url 'user_update' user.id %}">Edit </a>
                 
-                <a href="{% url 'userr_delete' user.id %}">Delete </a>
+                <a href="{% url 'user_delete' user.id %}">Delete </a>
             </td>
         </tr>
         {% endfor %}

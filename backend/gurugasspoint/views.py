@@ -31,7 +31,7 @@ def product_delete(request, pk):
     if request.method == 'POST':
         product.delete()
         return redirect('product_list')
-    return render(request, 'allproducts.html', {'product': product})
+    return render(request, 'products/allproducts.html', {'product': product})
 
 #  MAMABO YA  CUSTOMER KWA DATABASE
 # READ: List all products
@@ -62,7 +62,7 @@ def customer_delete(request, pk):
     if request.method == 'POST':
         customer.delete()
         return redirect('customers_list')
-    return render(request, 'customer/allcustomers.html', {'customer': customer})
+    return render(request, 'customers/allcustomers.html', {'customer': customer})
 
 #  MAMABO YA  users KWA DATABASE
 # READ: List all USERS
@@ -81,7 +81,7 @@ def user_create(request):
 # UPDATE: Edit an existing user
 def user_update(request, pk):
     user = get_object_or_404(User, pk=pk)
-    form = CustomerForm(request.POST or None, instance=user)
+    form = UserForm(request.POST or None, instance=user)
     if form.is_valid():
         form.save()
         return redirect('user_list')
