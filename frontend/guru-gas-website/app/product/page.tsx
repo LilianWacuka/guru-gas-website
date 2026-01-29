@@ -2,11 +2,7 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription,} from "@/components/ui/card";
 
 export default function ProductPage() {
   return (
