@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     #'django.contrib.messages',
     'gurugasspoint',
-    'members',
+    #'members',
     
     
     

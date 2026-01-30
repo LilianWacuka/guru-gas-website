@@ -21,7 +21,9 @@ urlpatterns = [
     path('user_update/<int:pk>/', views.user_update, name='user_update'),
     path('user_delete/<int:pk>/', views.user_delete, name='user_delete'),
     
-    
+    #login to system
+    path('homelogin',views.homelogin,name="homelogin"),
+    path('loginform',views.loginform,name="login"),  
     
 ]
 

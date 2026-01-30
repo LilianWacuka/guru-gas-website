@@ -2,6 +2,10 @@ from django.shortcuts import redirect
 from django.shortcuts import render
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
+from django.shortcuts import render, redirect
+
+from django.contrib.auth import authenticate, login,logout
+from django.contrib import messages
 # myapp/views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product,Customer,User
@@ -104,5 +108,25 @@ def user_delete(request, pk):
 def customerview(request):
     products = Product.objects.all()
     return render(request, 'customers/viewproducts.html', {'products': products})
+
+
+#mambo ya login
+def homelogin(request):
+    return render(request,'login/homelogin.html')
+
+def loginform(request):
+    if request.method=="POST":
+        username=request.POST["username"]
+        password=request.POST["password"]
+        user=authenticate(request,username=username,password=password)
+        if user is not None:
+            login(request,user)
+            return redirect('userlist')
+        else:
+            return render(request,'login/loginform.html')
+        
+
+        
+    
 
 
