@@ -1,39 +1,67 @@
 {% extends 'products/base.html' %}
-{% block title %} All Products {% endblock %}
 {% load static %}
 
-{% block content %}
-<h1 class="bg-green-200">All Products</h1>
-<table class="m-8 px-4 py-2 border-solid border-2 box-sizing: border-box; ">
-    <thead>
-        <tr> 
-            <th>Product Name</th>
-            <th>Weight</th>
-            <th>Price</th>
-            <th>Units</th>
-            <th>Serial Number</th>
-            <th>Image</th>
-            <th>Actions</th>
-        </tr>
+{% block title %}{% endblock %}
 
-    </thead>
-    <tbody>
+{% block content %}
+<h1 class="bg-green-200 text-center py-4 text-xl font-semibold">
+    All Products
+</h1>
+
+<div class="container mx-auto px-4 py-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
         {% for product in products %}
-        <tr>
-            <td>{{ product.product_name }}</td>
-            <td>{{ product.weight }}</td>
-            <td>{{ product.price }}</td>
-            <td>{{ product.units }}</td>
-            <td>{{ product.serial_number }}</td>
-            <td>{{ product_image}}</td>
-            <td>
-                <a href="{% url 'product_update' product.id %}">Edit </a>
-                
-                <a href="{% url 'product_delete' product.id %}">Delete </a>
-            </td>
-        </tr>
+        <!-- Product Card -->
+        <div class="border rounded-lg shadow-md bg-white overflow-hidden">
+
+            <!-- Image -->
+            {% if product.image %}
+            <img
+                src="{{ product.image.url }}"
+                alt="{{ product.product_name }}"
+                class="w-full h-48 object-cover"
+            />
+            {% else %}
+            <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+                <span class="text-gray-500">No Image</span>
+            </div>
+            {% endif %}
+
+            <!-- Product Details -->
+            <div class="p-4">
+                <h2 class="text-lg font-semibold mb-2">
+                    {{ product.product_name }}
+                </h2>
+
+                <div class="text-sm text-gray-700 space-y-1">
+                    <p><span class="font-semibold">Weight:</span> {{ product.weight }}</p>
+                    <p><span class="font-semibold">Price:</span> {{ product.price }}</p>
+                    <p><span class="font-semibold">Units:</span> {{ product.units }}</p>
+                    <p><span class="font-semibold">Serial Number:</span> {{ product.serial_number }}</p>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex justify-between mt-4">
+                    <a
+                        href="{% url 'product_update' product.id %}"
+                        class="text-blue-600 hover:underline"
+                    >
+                        Edit
+                    </a>
+
+                    <a
+                        href="{% url 'product_delete' product.id %}"
+                        class="text-red-600 hover:underline"
+                    >
+                        Delete
+                    </a>
+                </div>
+            </div>
+
+        </div>
         {% endfor %}
-    </tbody>
-    
-</table>
+
+    </div>
+</div>
 {% endblock %}
