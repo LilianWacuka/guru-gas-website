@@ -1,15 +1,15 @@
-from django.shortcuts import redirect
-from django.shortcuts import render
-from django.contrib.auth import authenticate,login,logout
-from django.contrib import messages
-from django.shortcuts import render, redirect
 
+from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login,logout
 from django.contrib import messages
 # myapp/views.py
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Product,Customer,User
-from .forms import ProductForm,CustomerForm,UserForm
+
+from .models import Product
+from gurugasspoint.models import Cart
+from gurugasspoint.models import CartItem
+from gurugasspoint.models import Order
+from .forms import ProductForm
 
 # READ: List all products
 def product_list(request):
@@ -18,7 +18,7 @@ def product_list(request):
 
 # CREATE: Add a new product
 def product_create(request):
-    form = ProductForm(request.POST or None)
+    form = ProductForm(request.POST,request.FILES)
     if form.is_valid():
         form.save()
         return redirect('product_list')
@@ -27,7 +27,8 @@ def product_create(request):
 # UPDATE: Edit an existing product
 def product_update(request, pk):
     product = get_object_or_404(Product, pk=pk)
-    form = ProductForm(request.POST or None, instance=product)
+    form = ProductForm(request.POST or None, request.FILES or None, instance=product)
+
     if form.is_valid():
         form.save()
         return redirect('product_list')
@@ -39,94 +40,101 @@ def product_delete(request, pk):
     if request.method == 'POST':
         product.delete()
         return redirect('product_list')
-    return render(request, 'products/allproducts.html', {'product': product})
+    return render(request, 'products/deleteproduct.html', {'product': product})
 
-#  MAMABO YA  CUSTOMER KWA DATABASE
-# READ: List all products
-def customer_list(request):
-    customers = Customer.objects.all()
-    return render(request, 'customers/allcustomers.html', {'customers': customers})
-
-# CREATE: Add a new customer
-def customer_create(request):
-    form = CustomerForm(request.POST or None)
-    if form.is_valid():
-        form.save()
-        return redirect('customer_list')
-    return render(request, 'customers/addcustomer.html', {'form': form})
-
-# UPDATE: Edit an existing Customer
-def customer_update(request, pk):
-    customer = get_object_or_404(Customer, pk=pk)
-    form = CustomerForm(request.POST or None, instance=customer)
-    if form.is_valid():
-        form.save()
-        return redirect('customer_list')
-    return render(request, 'customers/editcustomer.html', {'form': form})
-
-# DELETE: Remove a Customer
-def customer_delete(request, pk):
-    customer = get_object_or_404(Customer, pk=pk)
-    if request.method == 'POST':
-        customer.delete()
-        return redirect('customers_list')
-    return render(request, 'customers/allcustomers.html', {'customer': customer})
-
-#  MAMABO YA  users KWA DATABASE
-# READ: List all USERS
-def user_list(request):
-    users = User.objects.all()
-    return render(request, 'users/allusers.html', {'users': users})
-
-# CREATE: Add a new user
-def user_create(request):
-    form = UserForm(request.POST or None)
-    if form.is_valid():
-        form.save()
-        return redirect('user_list')
-    return render(request, 'users/adduser.html', {'form': form})
-
-# UPDATE: Edit an existing user
-def user_update(request, pk):
-    user = get_object_or_404(User, pk=pk)
-    form = UserForm(request.POST or None, instance=user)
-    if form.is_valid():
-        form.save()
-        return redirect('user_list')
-    return render(request, 'users/edituser.html', {'form': form})
-
-# DELETE: Remove a user
-def user_delete(request, pk):
-    user = get_object_or_404(User, pk=pk)
-    if request.method == 'POST':
-        user.delete()
-        return redirect('users_list')
-    return render(request, 'users/allusers.html', {'user': user})
-
-
-
-def customerview(request):
+#customer kuchungulia mali
+def viewproducts(request):
     products = Product.objects.all()
-    return render(request, 'customers/viewproducts.html', {'products': products})
+    return render(request,'products/customerview.html',{'products':products})
 
 
-#mambo ya login
-def homelogin(request):
-    return render(request,'login/homelogin.html')
 
-def loginform(request):
-    if request.method=="POST":
-        username=request.POST["username"]
-        password=request.POST["password"]
-        user=authenticate(request,username=username,password=password)
-        if user is not None:
-            login(request,user)
-            return redirect('userlist')
+
+# MAMBO MAMABO YA CART PALEEE KWENYEWE
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Product, Cart, CartItem,OrderItem
+
+def get_cart(request):
+    session_key = request.session.session_key
+    if not session_key:
+        request.session.create()
+        session_key = request.session.session_key
+    cart, created = Cart.objects.get_or_create(session_key=session_key)
+    return cart
+
+def product_list(request):
+    products = Product.objects.all()
+    return render(request, 'products/list.html', {'products': products})
+
+def add_to_cart(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    cart = get_cart(request)
+    quantity = int(request.POST.get('quantity', 1))
+
+    item = CartItem.objects.filter(cart=cart, product=product).first()
+    if item:
+        item.quantity += quantity
+        item.save()
+    else:
+        CartItem.objects.create(cart=cart, product=product, quantity=quantity)
+
+    return redirect('cart_detail')
+
+def update_cart(request, pk):
+    cart = get_cart(request)
+    item = get_object_or_404(CartItem, pk=pk, cart=cart)
+
+    if request.method == "POST":
+        quantity = int(request.POST.get("quantity", 1))
+        if quantity > 0:
+            item.quantity = quantity
+            item.save()
         else:
-            return render(request,'login/loginform.html')
-        
+            item.delete()
 
-        
-    
+    return redirect("cart_detail")
+
+def cart_detail(request):
+    cart = get_cart(request)
+    items = cart.items.all()
+    return render(request, 'cart/detail.html', {
+        'cart': cart,
+        'items': items,
+    })
+def checkout(request):
+    cart = get_cart(request)
+    items = cart.items.all()
+
+    if not items:
+        return redirect('cart_detail')
+
+    # Create a new Order
+    order = Order.objects.create(total_price=cart.total_price())
+
+    # Copy cart items into OrderItems
+    for item in items:
+        OrderItem.objects.create(
+            order=order,
+            product=item.product,
+            quantity=item.quantity,
+            price=item.product.price  # snapshot of price at purchase time
+        )
+
+    # Clear the cart after checkout
+    cart.items.all().delete()
+
+    return render(request, 'cart/checkout_success.html', {'order': order})
+
+def remove_from_cart(request, pk):
+    cart = get_cart(request)
+    try:
+        item = CartItem.objects.get(pk=pk, cart=cart)
+        if request.method == "POST":
+            item.delete()
+    except CartItem.DoesNotExist:
+        # Optionally just ignore if item not found
+        pass
+    return redirect("cart_detail")
+
 
 

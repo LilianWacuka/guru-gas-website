@@ -1,9 +1,0 @@
-{% extends 'users/base.html' %}
-{% block content %}
-<form action="" method="post" enctype="multipart/form-data" autocomplete="off">
-    <h1>New User Profile </h1>
-    {% csrf_token %}
-    {{form}}
-    <button type="submit">Save </button>    
-</form>
-{% endblock %}
