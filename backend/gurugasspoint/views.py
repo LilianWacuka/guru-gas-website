@@ -1,15 +1,12 @@
-
-from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login,logout
+from django.http import JsonResponse
 from django.contrib import messages
-# myapp/views.py
 from django.shortcuts import render, redirect, get_object_or_404
-
-from .models import Product
+from .models import Product,Customer
 from gurugasspoint.models import Cart
 from gurugasspoint.models import CartItem
 from gurugasspoint.models import Order
-from .forms import ProductForm
+from .forms import ProductForm,CustomerForm
 
 # READ: List all products
 def product_list(request):
@@ -42,10 +39,57 @@ def product_delete(request, pk):
         return redirect('product_list')
     return render(request, 'products/deleteproduct.html', {'product': product})
 
-#customer kuchungulia mali
-def viewproducts(request):
-    products = Product.objects.all()
-    return render(request,'products/customerview.html',{'products':products})
+
+
+
+#MAMBO MAMBO YA CUSTOMER PALE PALE 
+
+#customer kunda kaprofile
+def customer_create(request):
+    form = CustomerForm(request.POST,request.FILES)
+    if form.is_valid():
+        form.save()
+    return render(request, 'customers/createprofile.html', {'form': form})
+
+# UPDATE: Edit an existing customer
+def customer_update(request, pk):
+    customer = get_object_or_404(Customer, pk=pk)
+    form = CustomerForm(request.POST or None, request.FILES or None, instance=customer)
+
+    if form.is_valid():
+        form.save()        
+    return render(request, 'customers/editprofile.html', {'form': form})
+
+# DELETE: cudelete profile
+def customer_delete(request, pk):
+    customer = get_object_or_404(Customer, pk=pk)
+    if request.method == 'POST':
+        customer.delete()
+        
+    return render(request, 'customers/deleteprofile.html', {'customer': customer})
+# kuingia ndani sasaa 
+def home(request):
+    return redirect(request,'products/list.html')
+
+def login_customer(request):
+    if request.method == "POST": 
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        user = authenticate(request, username=username, password=password)
+        if user is not None: 
+            login(request, user)
+            return redirect("home") # redirect to homepage or dashboard 
+        else:
+            messages.error(request, "Invalid username or password")
+        return render(request, "login.html")
+    return render(request, "login.html")
+
+def logout_customer(request):
+    logout(request) 
+    return redirect("login")
+
+
+
 
 
 
@@ -136,5 +180,15 @@ def remove_from_cart(request, pk):
         pass
     return redirect("cart_detail")
 
+#IO MAMBO YA KADROPDOWN KUCHUKUA WEIGHT
+# views.py
+
+def get_price(request):
+    weight = request.GET.get('weight')
+    try:
+        product = Product.objects.get(weight=weight)
+        return JsonResponse({'price': float(product.price)})
+    except Product.DoesNotExist:
+        return JsonResponse({'price': 0})
 
 

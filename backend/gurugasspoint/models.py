@@ -42,3 +42,15 @@ class OrderItem(models.Model):
 
     def total_price(self):
         return self.price * self.quantity
+
+# mambo ya customer pale
+class Customer(models.Model):
+    customer_name=models.CharField(max_length=100)
+    cell=models.CharField(max_length=11)
+    location=models.CharField(max_length=20)    
+    customer_image = models.ImageField(default="customer.png",blank=True)
+    username=models.CharField(max_length=23)
+    password=models.CharField(max_length=10)
+    
+    def __str__(self):
+        return self.customer_name
