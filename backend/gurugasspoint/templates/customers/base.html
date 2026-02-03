@@ -17,11 +17,13 @@
         <a href="{% url 'product_list' %}" class="font-semibold">Home</a>
         <a href="{% url 'cart_detail' %}">Cart</a>
         <a href="{% url 'logincustomer' %}">Login</a>
-        <a href="{% url 'product_list' %}">Logout</a>
+        <a href="{% url 'logoutcustomer' %}">Logout</a>
     </nav>
 
     <!-- PAGE CONTENT -->
-    {% block content %}{% endblock %}
+    {% block content %}
+   
+    {% endblock %}
 
 </body>
 </html>

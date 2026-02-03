@@ -16,7 +16,10 @@ urlpatterns = [
     path('addcustomer/', views.customer_create, name='profile_create'),
     path('update/<int:pk>/', views.customer_update, name='profile_update'),
     path('delete/<int:pk>/', views.customer_delete, name='profile_delete'),
-    path('login/',views.login_customer,name='logincustomer'),
+    path('login/',views.login_view,name='logincustomer'),
+    path('logout/',views.logout_view,name='logoutcustomer'),
+    path("myprofile/", views.myprofile, name="myprofile"),
+
     
     
     #mambo ya cart    
